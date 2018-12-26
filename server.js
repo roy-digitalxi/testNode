@@ -9,7 +9,7 @@ const PORT = 3000;
 
 // App
 const app = express();
-app.get('/test_con', function (req, res) {
+app.get('/', function (req, res) {
 
   //Connect to DB
   const mysqlCon = mysql.createConnection({
@@ -26,14 +26,11 @@ app.get('/test_con', function (req, res) {
       })
     }
     return res.json({
-      confirmation: 'success',
-      host: process.env.DATABASE_HOST,
-      user: process.env.DATABASE_USER,
-      password: process.env.DATABASE_PASSWORD,
+      confirmation: 'success 123',
     })
   })
 
 });
 
 app.listen(PORT);
-
+console.log('Running on http://localhost:' + PORT);
