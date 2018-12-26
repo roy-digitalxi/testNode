@@ -67,6 +67,19 @@ app.get('/test2', function (req, res) {
   const adminPath = 'mongodb://my-user:my-password@mongodb-bitnami.default.svc.cluster.local:27017/';
   const mongoCon = mongoose.createConnection(adminPath);
   const Admin = mongoose.mongo.Admin;
+
+  mongoCon.on('error', (err) => {
+
+    if(err){
+      return res.json({
+        confirmation: 'fail',
+        env: process.env,
+        message: err,
+        adminPath
+      })
+    }    
+  })
+
   mongoCon.on('open', () => {
     new Admin(mongoCon.db).listDatabases((err, mongoDbList) => {
 
