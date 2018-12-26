@@ -7,6 +7,10 @@ const mongoose = require('mongoose');
 // Constants
 const PORT = 3000;
 
+// keycloak
+// user: keycloak
+// pwd: AcLIg5nD3P
+
 // mysql
 // host: mysql-bitnami-mysql.default.svc.cluster.local
 // user: keycloak
@@ -14,8 +18,8 @@ const PORT = 3000;
 
 // mongodb
 // host: mongodb-bitnami.default.svc.cluster.local
-// user: my-user
-// pwd: my-password
+// user: root
+// pwd: password
 
 // App
 const app = express();
