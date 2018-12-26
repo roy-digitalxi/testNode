@@ -64,26 +64,39 @@ app.get('/test1', function (req, res) {
 
 app.get('/test2', function (req, res) {
 
-  const dbPath = 'mongodb://my-user:my-password@mongodb-bitnami.default.svc.cluster.local:27017/my-database';
-  mongoose.connect(
-    dbPath,
-    (err, res) => {
+  const adminPath = 'mongodb://root:password@mongodb-bitnami.default.svc.cluster.local:27017/';
+  const mongoCon = mongoose.createConnection(adminPath);
+  const Admin = mongoose.mongo.Admin;
+
+  mongoCon.on('error', (err) => {
+
+    if(err){
+      return res.json({
+        confirmation: 'fail',
+        message: err
+      })
+    }
+  })
+
+  mongoCon.on('open', () => {
+    new Admin(mongoCon.db).listDatabases((err, mongoDbList) => {
+
+      mongoCon.close();
+
       if (err) {
         return res.json({
           confirmation: 'fail',
-          message: err,
-          env: process.env,
-          dbPath
+          message: err
         })
       }
 
       return res.json({
         confirmation: 'success',
-        env: process.env,
-        dbPath
+        mongoDbList
       })
-    }
-  );
+
+    })
+  })
 
 });
 
