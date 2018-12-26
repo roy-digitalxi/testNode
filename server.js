@@ -40,7 +40,7 @@ app.use(bodyParser.json());
 const memoryStore = new session.MemoryStore();
 const config = { store: memoryStore };
 const keycloakConfig = {
-  "auth-server-url": "http://localhost:8080/auth",
+  "auth-server-url": "http://35.203.120.140/auth",
   'bearer-only': false,
   "ssl-required": "external",
   "resource": "nodejs-connect",
@@ -108,7 +108,7 @@ app.post('/mongodb_create', keycloak.enforcer(['res1:create'],
 
       const dbName = dbUserName;
 
-      MongoClient.connect(`mongodb://${dbUserName}:${dbPassword}@localhost:27017/${dbName}`, { useNewUrlParser: true }, (err, db) => {
+      MongoClient.connect(`mongodb://${dbUserName}:${dbPassword}@mongodb-bitnami.default.svc.cluster.local:27017/${dbName}`, { useNewUrlParser: true }, (err, db) => {
         if (err) {
           return res.json({
             confirmation: 'fail',
@@ -177,7 +177,7 @@ app.post('/mongodb_view', keycloak.enforcer(['res1:create'],
 
       const dbName = dbUserName;
 
-      MongoClient.connect(`mongodb://${dbUserName}:${dbPassword}@localhost:27017/${dbName}`, { useNewUrlParser: true }, (err, db) => {
+      MongoClient.connect(`mongodb://${dbUserName}:${dbPassword}@mongodb-bitnami.default.svc.cluster.local:27017/${dbName}`, { useNewUrlParser: true }, (err, db) => {
         if (err) {
           return res.json({
             confirmation: 'fail',
@@ -245,7 +245,7 @@ app.post('/mysql_create', keycloak.enforcer(['res1:create'],
       const dbName = dbUserName;
 
       var con = mysql.createConnection({
-        host: `localhost`,
+        host: `mysql-bitnami-mysql.default.svc.cluster.local`,
         user: dbName,
         password: dbPassword,
         database: dbName
@@ -323,7 +323,7 @@ app.post('/mysql_view', keycloak.enforcer(['res1:create'],
       const dbName = dbUserName;
 
       var con = mysql.createConnection({
-        host: `localhost`,
+        host: `mysql-bitnami-mysql.default.svc.cluster.local`,
         user: dbName,
         password: dbPassword,
         database: dbName
@@ -411,9 +411,9 @@ app.post('/admin/create_org', (req, res) => {
 
   // 1. mysql check
   const mysqlCon = mysql.createConnection({
-    host: `localhost`,
-    user: "root",
-    password: '',
+    host: `mysql-bitnami-mysql.default.svc.cluster.local`,
+    user: "keycloak",
+    password: 'keycloak',
   });
   mysqlCon.connect((err) => {
     if (err) {
@@ -434,7 +434,7 @@ app.post('/admin/create_org', (req, res) => {
       }
 
       // 2. mongodb check
-      const adminPath = 'mongodb://root:root@localhost:27017/';
+      const adminPath = 'mongodb://root:password@mongodb-bitnami.default.svc.cluster.local:27017/';
       const mongoCon = mongoose.createConnection(adminPath);
       const Admin = mongoose.mongo.Admin;
       mongoCon.on('open', () => {
@@ -453,8 +453,8 @@ app.post('/admin/create_org', (req, res) => {
           // 3. keycloak check
           const keyCloakSettings = {
             baseUrl: 'http://127.0.0.1:8080/auth',
-            username: 'admin',
-            password: 'admin',
+            username: 'keycloak',
+            password: 'AcLIg5nD3P',
             grant_type: 'password',
             client_id: 'admin-cli'
           };
@@ -482,8 +482,8 @@ app.post('/admin/create_org', (req, res) => {
 
                     const createDbQuery = `CREATE DATABASE ${dbName}`;
                     const createTableQuery = `CREATE TABLE ${dbName}.customers (name VARCHAR(255), address VARCHAR(255))`;
-                    const createDbUserQuery = `CREATE USER '${dbUserName}'@'localhost' IDENTIFIED BY '${dbPassword}';`;
-                    const addPermissionQuery = `GRANT ALL PRIVILEGES ON ${dbName}.* TO '${dbUserName}'@'localhost';`;
+                    const createDbUserQuery = `CREATE USER '${dbUserName}'@'mysql-bitnami-mysql.default.svc.cluster.local' IDENTIFIED BY '${dbPassword}';`;
+                    const addPermissionQuery = `GRANT ALL PRIVILEGES ON ${dbName}.* TO '${dbUserName}'@'mysql-bitnami-mysql.default.svc.cluster.local';`;
 
                     // 5. mysql setup
                     mysqlCon.query(createDbQuery, (err, result) => {
@@ -578,10 +578,10 @@ app.post('/admin/create_org', (req, res) => {
                                     const newServerClient = {
                                       clientId: serverClientName,
                                       redirectUris: [
-                                        'http://localhost:8888/*'
+                                        'http://35.203.79.83/*'
                                       ],
                                       webOrigins: [
-                                        'http://localhost:8888/*'
+                                        'http://35.203.79.83/*'
                                       ],
                                       directAccessGrantsEnabled: true,
                                       serviceAccountsEnabled: true,
@@ -593,12 +593,12 @@ app.post('/admin/create_org', (req, res) => {
                                     const connectClientName = 'nodejs-connect';
                                     const newConnectClient = {
                                       clientId: connectClientName,
-                                      baseUrl: 'http://localhost:8888/',
+                                      baseUrl: 'http://35.203.79.83/',
                                       redirectUris: [
-                                        'http://localhost:8888/*'
+                                        'http://35.203.79.83/*'
                                       ],
                                       webOrigins: [
-                                        'http://localhost:8888/*'
+                                        'http://35.203.79.83/*'
                                       ],
                                       publicClient: true,
                                       fullScopeAllowed: false,
@@ -620,7 +620,7 @@ app.post('/admin/create_org', (req, res) => {
                                               .then((createdRole) => {
 
                                                 // 4. admin login
-                                                let url = `http://localhost:8080/auth/realms/master/protocol/openid-connect/token`;
+                                                let url = `http://35.203.120.140/auth/realms/master/protocol/openid-connect/token`;
                                                 let params = qs.stringify({
                                                   username: 'admin',
                                                   password: 'admin',
@@ -635,7 +635,7 @@ app.post('/admin/create_org', (req, res) => {
 
                                                     // 5. create client scope
                                                     const { access_token } = adminLogin;
-                                                    url = `http://localhost:8080/auth/admin/realms/${createdRealm.realm}/client-scopes`;
+                                                    url = `http://35.203.120.140/auth/admin/realms/${createdRealm.realm}/client-scopes`;
                                                     const newClientScopeName = 'client-attribute-scope';
                                                     const newClientScope = {
                                                       attributes: {
@@ -718,7 +718,7 @@ app.post('/admin/create_org', (req, res) => {
 
                                                                     // 7. add scope to connect client
                                                                     // 7.1 client scope
-                                                                    url = `http://localhost:8080/auth/admin/realms/${createdRealm.realm}/clients/${createdConnectClient.id}/default-client-scopes/${createdClientScopeId}`;
+                                                                    url = `http://35.203.120.140/auth/admin/realms/${createdRealm.realm}/clients/${createdConnectClient.id}/default-client-scopes/${createdClientScopeId}`;
                                                                     const updateClient = {
                                                                       client: createdConnectClient.id,
                                                                       clientScopeId: createdClientScopeId,
@@ -730,7 +730,7 @@ app.post('/admin/create_org', (req, res) => {
                                                                       .then((response) => (response.data))
                                                                       .then(() => {
                                                                         // 7.2 scope
-                                                                        url = `http://localhost:8080/auth/admin/realms/${createdRealm.realm}/clients/${createdConnectClient.id}/scope-mappings/realm`;
+                                                                        url = `http://35.203.120.140/auth/admin/realms/${createdRealm.realm}/clients/${createdConnectClient.id}/scope-mappings/realm`;
                                                                         axios.post(url, [createdRole], {
                                                                           headers: { 'Authorization': "Bearer " + access_token }
                                                                         })
@@ -741,7 +741,7 @@ app.post('/admin/create_org', (req, res) => {
                                                                             // 8.2 resource
                                                                             // 8.3 policy
                                                                             // 8.4 permission
-                                                                            url = `http://localhost:8080/auth/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/scope`;
+                                                                            url = `http://35.203.120.140/auth/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/scope`;
                                                                             const newAuthScope = {
                                                                               name: "create"
                                                                             };
@@ -751,7 +751,7 @@ app.post('/admin/create_org', (req, res) => {
                                                                               .then((response) => (response.data))
                                                                               .then((createdAuthScope) => {
 
-                                                                                url = `http://localhost:8080/auth/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/resource`;
+                                                                                url = `http://35.203.120.140/auth/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/resource`;
                                                                                 const authResourceName = 'res1'
                                                                                 const newAuthResource = {
                                                                                   attributes: {},
@@ -769,7 +769,7 @@ app.post('/admin/create_org', (req, res) => {
                                                                                   .then((response) => (response.data))
                                                                                   .then((createdAuthResource) => {
 
-                                                                                    url = `http://localhost:8080/auth/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/policy/role`;
+                                                                                    url = `http://35.203.120.140/auth/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/policy/role`;
                                                                                     const authPolicyName = 'policy1'
                                                                                     const newAuthPolicy = {
                                                                                       decisionStrategy: "UNANIMOUS",
@@ -789,7 +789,7 @@ app.post('/admin/create_org', (req, res) => {
                                                                                       .then((response) => (response.data))
                                                                                       .then((createdAuthPolicy) => {
 
-                                                                                        url = `http://localhost:8080/auth/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/permission/resource`;
+                                                                                        url = `http://35.203.120.140/auth/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/permission/resource`;
                                                                                         const authPermissionName = 'permission1'
                                                                                         const newAuthPermission = {
                                                                                           decisionStrategy: "UNANIMOUS",
@@ -852,7 +852,7 @@ app.post('/admin/create_org', (req, res) => {
                                                                                                             client.clients.roles.find(createdRealm.realm, realmManagementClientId)
                                                                                                               .then((clientRoles) => {
 
-                                                                                                                url = `http://localhost:8080/auth/admin/realms/${createdRealm.realm}/users/${newUser.id}/role-mappings/clients/${realmManagementClientId}`;
+                                                                                                                url = `http://35.203.120.140/auth/admin/realms/${createdRealm.realm}/users/${newUser.id}/role-mappings/clients/${realmManagementClientId}`;
                                                                                                                 axios.post(url, clientRoles, {
                                                                                                                   headers: {
                                                                                                                     'Authorization': "Bearer " + access_token
