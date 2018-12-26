@@ -19,6 +19,14 @@ const PORT = 3000;
 
 // App
 const app = express();
+
+app.get('/', function (req, res) {
+
+  return res.json({
+    message: 'server is running'
+  })
+})
+
 app.get('/test1', function (req, res) {
 
   //Connect to DB
