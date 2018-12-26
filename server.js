@@ -19,7 +19,7 @@ const PORT = 3000;
 
 // App
 const app = express();
-app.get('/', function (req, res) {
+app.get('/test1', function (req, res) {
 
   //Connect to DB
   const mysqlCon = mysql.createConnection({
