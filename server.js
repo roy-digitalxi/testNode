@@ -19,6 +19,9 @@ app.get('/', function (req, res) {
   });
 
   mysqlCon.connect((err) => {
+
+    mysqlCon.end();
+
     if(err) {
       return res.json({
         confirmation: 'fail',
