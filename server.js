@@ -7,6 +7,15 @@ const mongoose = require('mongoose');
 // Constants
 const PORT = 3000;
 
+// mysql
+// host: mysql-bitnami-mysql.default.svc.cluster.local
+// user: keycloak
+// pwd: keycloak
+
+// mongodb
+// host: mongodb-bitnami.default.svc.cluster.local
+// user: my-user
+// pwd: my-password
 
 // App
 const app = express();
@@ -27,6 +36,7 @@ app.get('/test1', function (req, res) {
       return res.json({
         confirmation: 'fail',
         message: err,
+        env: process.env,
         host: process.env.DATABASE_HOST,
         user: process.env.DATABASE_USER,
         password: process.env.DATABASE_PASSWORD,
@@ -34,6 +44,7 @@ app.get('/test1', function (req, res) {
     }
     return res.json({
       confirmation: 'success',
+      env: process.env,
       host: process.env.DATABASE_HOST,
       user: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
@@ -45,7 +56,7 @@ app.get('/test1', function (req, res) {
 
 app.get('/test2', function (req, res) {
 
-  const adminPath = 'mongodb://root:root@localhost:27017/';
+  const adminPath = 'mongodb://my-user:my-password@mongodb-bitnami.default.svc.cluster.local:27017/';
   const mongoCon = mongoose.createConnection(adminPath);
   const Admin = mongoose.mongo.Admin;
   mongoCon.on('open', () => {
@@ -56,6 +67,7 @@ app.get('/test2', function (req, res) {
       if (err) {
         return res.json({
           confirmation: 'fail',
+          env: process.env,
           message: err,
           adminPath
         })
@@ -63,6 +75,7 @@ app.get('/test2', function (req, res) {
 
       return res.json({
         confirmation: 'success',
+        env: process.env,
         mongoDbList,
         adminPath,
       })
