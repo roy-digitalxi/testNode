@@ -1,7 +1,8 @@
 'use strict';
 
 const express = require('express');
-const mysql  = require('mysql');
+const mysql = require('mysql');
+const mongoose = require('mongoose');
 
 // Constants
 const PORT = 3000;
@@ -9,7 +10,7 @@ const PORT = 3000;
 
 // App
 const app = express();
-app.get('/', function (req, res) {
+app.get('/test1', function (req, res) {
 
   //Connect to DB
   const mysqlCon = mysql.createConnection({
@@ -22,7 +23,7 @@ app.get('/', function (req, res) {
 
     mysqlCon.end();
 
-    if(err) {
+    if (err) {
       return res.json({
         confirmation: 'fail',
         message: err,
@@ -32,10 +33,39 @@ app.get('/', function (req, res) {
       })
     }
     return res.json({
-      confirmation: 'success 123',
+      confirmation: 'success',
       host: process.env.DATABASE_HOST,
       user: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
+    })
+  })
+
+});
+
+
+app.get('/test2', function (req, res) {
+
+  const adminPath = 'mongodb://root:root@localhost:27017/';
+  const mongoCon = mongoose.createConnection(adminPath);
+  const Admin = mongoose.mongo.Admin;
+  mongoCon.on('open', () => {
+    new Admin(mongoCon.db).listDatabases((err, mongoDbList) => {
+
+      mongoCon.close();
+
+      if (err) {
+        return res.json({
+          confirmation: 'fail',
+          message: err,
+          adminPath
+        })
+      }
+
+      return res.json({
+        confirmation: 'success',
+        mongoDbList,
+        adminPath,
+      })
     })
   })
 
