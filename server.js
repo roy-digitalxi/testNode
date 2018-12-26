@@ -22,7 +22,10 @@ app.get('/', function (req, res) {
     if(err) {
       return res.json({
         confirmation: 'fail',
-        message: err
+        message: err,
+        host: process.env.DATABASE_HOST,
+        user: process.env.DATABASE_USER,
+        password: process.env.DATABASE_PASSWORD,
       })
     }
     return res.json({
