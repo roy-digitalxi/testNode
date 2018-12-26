@@ -37,29 +37,29 @@ app.use(bodyParser.json());
 
 
 // keycloak session
-const memoryStore = new session.MemoryStore();
-const config = { store: memoryStore };
-const keycloakConfig = {
-  "auth-server-url": "http://35.203.120.140/auth",
-  'bearer-only': false,
-  "ssl-required": "external",
-  "resource": "nodejs-connect",
-  "policy-enforcer": {},
-  "confidential-port": 0,
-  "public-client": true,
-};
-const keycloak = new KeycloakMultirealm(config, keycloakConfig);
+// const memoryStore = new session.MemoryStore();
+// const config = { store: memoryStore };
+// const keycloakConfig = {
+//   "auth-server-url": "http://35.203.120.140/auth",
+//   'bearer-only': false,
+//   "ssl-required": "external",
+//   "resource": "nodejs-connect",
+//   "policy-enforcer": {},
+//   "confidential-port": 0,
+//   "public-client": true,
+// };
+// const keycloak = new KeycloakMultirealm(config, keycloakConfig);
 
-app.use(session({
-  secret: 'mySecret',
-  resave: false,
-  saveUninitialized: true,
-  store: memoryStore
-}));
-app.use(keycloak.middleware({
-  logout: '/logout',
-  admin: '/',
-}));
+// app.use(session({
+//   secret: 'mySecret',
+//   resave: false,
+//   saveUninitialized: true,
+//   store: memoryStore
+// }));
+// app.use(keycloak.middleware({
+//   logout: '/logout',
+//   admin: '/',
+// }));
 
 
 app.get('/', function (req, res) {
@@ -68,21 +68,22 @@ app.get('/', function (req, res) {
   })
 })
 
-// eg. http://localhost:8888/login?realm=org94146
-app.get('/login', keycloak.protect(), (req, res) => {
+app.get('/login', (req, res) => {
+// app.get('/login', keycloak.protect(), (req, res) => {
   return res.json({
     result: JSON.stringify(JSON.parse(req.session['keycloak-token']), null, 4),
   })
 })
 
+app.post('/mongodb_create', (req, res) => {
 
-// eg. http://localhost:8888/mongodb_create?realm=org94146
-app.post('/mongodb_create', keycloak.enforcer(['res1:create'],
-  {
-    resource_server_id: 'nodejs-apiserver',
-    response_mode: 'permissions'
-  }
-), (req, res) => {
+// app.post('/mongodb_create', keycloak.enforcer(['res1:create'],
+//   {
+//     resource_server_id: 'nodejs-apiserver',
+//     response_mode: 'permissions'
+//   }
+// ), (req, res) => {
+
   const token = req.kauth.grant.access_token.token;
   keycloak.getAccount(req.query.realm, token)
     .then((user) => {
@@ -143,14 +144,15 @@ app.post('/mongodb_create', keycloak.enforcer(['res1:create'],
     })
 })
 
+app.post('/mongodb_view',  (req, res) => {
 
-// eg. http://localhost:8888/mongodb_view?realm=org94146
-app.post('/mongodb_view', keycloak.enforcer(['res1:create'],
-  {
-    resource_server_id: 'nodejs-apiserver',
-    response_mode: 'permissions'
-  }
-), (req, res) => {
+// app.post('/mongodb_view', keycloak.enforcer(['res1:create'],
+//   {
+//     resource_server_id: 'nodejs-apiserver',
+//     response_mode: 'permissions'
+//   }
+// ), (req, res) => {
+  
   const token = req.kauth.grant.access_token.token;
 
   keycloak.getAccount(req.query.realm, token)
@@ -212,13 +214,14 @@ app.post('/mongodb_view', keycloak.enforcer(['res1:create'],
 })
 
 
-// eg. http://localhost:8888/mysql_create?realm=org94146
-app.post('/mysql_create', keycloak.enforcer(['res1:create'],
-  {
-    resource_server_id: 'nodejs-apiserver',
-    response_mode: 'permissions'
-  }
-), (req, res) => {
+app.post('/mysql_create', (req, res) => {
+
+// app.post('/mysql_create', keycloak.enforcer(['res1:create'],
+//   {
+//     resource_server_id: 'nodejs-apiserver',
+//     response_mode: 'permissions'
+//   }
+// ), (req, res) => {
   const token = req.kauth.grant.access_token.token;
   keycloak.getAccount(req.query.realm, token)
     .then((user) => {
@@ -289,14 +292,15 @@ app.post('/mysql_create', keycloak.enforcer(['res1:create'],
     })
 })
 
+app.post('/mysql_view', (req, res) => {
 
-// eg. http://localhost:8888/mysql_view?realm=org94146
-app.post('/mysql_view', keycloak.enforcer(['res1:create'],
-  {
-    resource_server_id: 'nodejs-apiserver',
-    response_mode: 'permissions'
-  }
-), (req, res) => {
+// app.post('/mysql_view', keycloak.enforcer(['res1:create'],
+//   {
+//     resource_server_id: 'nodejs-apiserver',
+//     response_mode: 'permissions'
+//   }
+// ), (req, res) => {
+
   const token = req.kauth.grant.access_token.token;
   keycloak.getAccount(req.query.realm, token)
     .then((user) => {
@@ -367,7 +371,6 @@ app.post('/mysql_view', keycloak.enforcer(['res1:create'],
 })
 
 
-// eg. localhost:8888/admin/create_org
 app.post('/admin/create_org', (req, res) => {
 
   const {
