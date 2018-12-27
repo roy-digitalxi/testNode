@@ -9,8 +9,8 @@ const qs = require('qs');
 
 // mysql
 // host: mysql-bitnami-mysql.default.svc.cluster.local
-// user: keycloak
-// pwd: keycloak
+// user: root
+// pwd: root
 
 // mongodb
 // host: mongodb-bitnami.default.svc.cluster.local
@@ -410,8 +410,8 @@ app.post('/admin/create_org', (req, res) => {
   // 1. mysql check
   const mysqlCon = mysql.createConnection({
     host: `mysql-bitnami-mysql.default.svc.cluster.local`,
-    user: "keycloak",
-    password: 'keycloak',
+    user: "root",
+    password: 'root',
   });
   mysqlCon.connect((err) => {
     if (err) {
@@ -622,8 +622,8 @@ app.post('/admin/create_org', (req, res) => {
                                                 // 4. admin login
                                                 let url = `${keycloakHost}/realms/master/protocol/openid-connect/token`;
                                                 let params = qs.stringify({
-                                                  username: 'admin',
-                                                  password: 'admin',
+                                                  username: 'keycloak',
+                                                  password: '8iz3iZpGW7',
                                                   client_id: 'admin-cli',
                                                   grant_type: 'password'
                                                 });
