@@ -5,7 +5,7 @@ const qs = require('qs');
 
 // keycloak
 // user: keycloak
-// pwd: AcLIg5nD3P
+// pwd: 8iz3iZpGW7
 
 // mysql
 // host: mysql-bitnami-mysql.default.svc.cluster.local
@@ -451,7 +451,7 @@ app.post('/admin/create_org', (req, res) => {
           const keyCloakSettings = {
             baseUrl: 'http://127.0.0.1:8080/auth',
             username: 'keycloak',
-            password: 'AcLIg5nD3P',
+            password: '8iz3iZpGW7',
             grant_type: 'password',
             client_id: 'admin-cli'
           };
