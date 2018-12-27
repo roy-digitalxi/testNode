@@ -1,6 +1,6 @@
 {
   "realm": "org97330",
-  "auth-server-url": "http://35.203.22.133/auth",
+  "auth-server-url": "http://35.203.121.29/auth",
   "ssl-required": "none",
   "resource": "nodejs-connect",
   "public-client": true,
