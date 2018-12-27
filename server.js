@@ -37,10 +37,11 @@ app.use(bodyParser.json());
 
 
 // keycloak session
+const keycloakHost = 'http://35.203.22.133/auth';
 const memoryStore = new session.MemoryStore();
 const config = { store: memoryStore };
 const keycloakConfig = {
-  "auth-server-url": "http://35.203.22.133/auth",
+  "auth-server-url": `${keycloakHost}`,
   'bearer-only': false,
   "ssl-required": "external",
   "resource": "nodejs-connect",
@@ -449,7 +450,7 @@ app.post('/admin/create_org', (req, res) => {
 
           // 3. keycloak check
           const keyCloakSettings = {
-            baseUrl: 'http://35.203.22.133/auth',
+            baseUrl: `${keycloakHost}`,
             username: 'keycloak',
             password: '8iz3iZpGW7',
             grant_type: 'password',
@@ -617,7 +618,7 @@ app.post('/admin/create_org', (req, res) => {
                                               .then((createdRole) => {
 
                                                 // 4. admin login
-                                                let url = `http://35.203.22.133/auth/realms/master/protocol/openid-connect/token`;
+                                                let url = `${keycloakHost}/realms/master/protocol/openid-connect/token`;
                                                 let params = qs.stringify({
                                                   username: 'admin',
                                                   password: 'admin',
@@ -632,7 +633,7 @@ app.post('/admin/create_org', (req, res) => {
 
                                                     // 5. create client scope
                                                     const { access_token } = adminLogin;
-                                                    url = `http://35.203.22.133/auth/admin/realms/${createdRealm.realm}/client-scopes`;
+                                                    url = `${keycloakHost}/admin/realms/${createdRealm.realm}/client-scopes`;
                                                     const newClientScopeName = 'client-attribute-scope';
                                                     const newClientScope = {
                                                       attributes: {
@@ -715,7 +716,7 @@ app.post('/admin/create_org', (req, res) => {
 
                                                                     // 7. add scope to connect client
                                                                     // 7.1 client scope
-                                                                    url = `http://35.203.22.133/auth/admin/realms/${createdRealm.realm}/clients/${createdConnectClient.id}/default-client-scopes/${createdClientScopeId}`;
+                                                                    url = `${keycloakHost}/admin/realms/${createdRealm.realm}/clients/${createdConnectClient.id}/default-client-scopes/${createdClientScopeId}`;
                                                                     const updateClient = {
                                                                       client: createdConnectClient.id,
                                                                       clientScopeId: createdClientScopeId,
@@ -727,7 +728,7 @@ app.post('/admin/create_org', (req, res) => {
                                                                       .then((response) => (response.data))
                                                                       .then(() => {
                                                                         // 7.2 scope
-                                                                        url = `http://35.203.22.133/auth/admin/realms/${createdRealm.realm}/clients/${createdConnectClient.id}/scope-mappings/realm`;
+                                                                        url = `${keycloakHost}/admin/realms/${createdRealm.realm}/clients/${createdConnectClient.id}/scope-mappings/realm`;
                                                                         axios.post(url, [createdRole], {
                                                                           headers: { 'Authorization': "Bearer " + access_token }
                                                                         })
@@ -738,7 +739,7 @@ app.post('/admin/create_org', (req, res) => {
                                                                             // 8.2 resource
                                                                             // 8.3 policy
                                                                             // 8.4 permission
-                                                                            url = `http://35.203.22.133/auth/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/scope`;
+                                                                            url = `${keycloakHost}/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/scope`;
                                                                             const newAuthScope = {
                                                                               name: "create"
                                                                             };
@@ -748,7 +749,7 @@ app.post('/admin/create_org', (req, res) => {
                                                                               .then((response) => (response.data))
                                                                               .then((createdAuthScope) => {
 
-                                                                                url = `http://35.203.22.133/auth/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/resource`;
+                                                                                url = `${keycloakHost}/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/resource`;
                                                                                 const authResourceName = 'res1'
                                                                                 const newAuthResource = {
                                                                                   attributes: {},
@@ -766,7 +767,7 @@ app.post('/admin/create_org', (req, res) => {
                                                                                   .then((response) => (response.data))
                                                                                   .then((createdAuthResource) => {
 
-                                                                                    url = `http://35.203.22.133/auth/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/policy/role`;
+                                                                                    url = `${keycloakHost}/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/policy/role`;
                                                                                     const authPolicyName = 'policy1'
                                                                                     const newAuthPolicy = {
                                                                                       decisionStrategy: "UNANIMOUS",
@@ -786,7 +787,7 @@ app.post('/admin/create_org', (req, res) => {
                                                                                       .then((response) => (response.data))
                                                                                       .then((createdAuthPolicy) => {
 
-                                                                                        url = `http://35.203.22.133/auth/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/permission/resource`;
+                                                                                        url = `${keycloakHost}/admin/realms/${createdRealm.realm}/clients/${createdServerClient.id}/authz/resource-server/permission/resource`;
                                                                                         const authPermissionName = 'permission1'
                                                                                         const newAuthPermission = {
                                                                                           decisionStrategy: "UNANIMOUS",
@@ -849,7 +850,7 @@ app.post('/admin/create_org', (req, res) => {
                                                                                                             client.clients.roles.find(createdRealm.realm, realmManagementClientId)
                                                                                                               .then((clientRoles) => {
 
-                                                                                                                url = `http://35.203.22.133/auth/admin/realms/${createdRealm.realm}/users/${newUser.id}/role-mappings/clients/${realmManagementClientId}`;
+                                                                                                                url = `${keycloakHost}/admin/realms/${createdRealm.realm}/users/${newUser.id}/role-mappings/clients/${realmManagementClientId}`;
                                                                                                                 axios.post(url, clientRoles, {
                                                                                                                   headers: {
                                                                                                                     'Authorization': "Bearer " + access_token
