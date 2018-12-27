@@ -54,7 +54,7 @@ const config = { store: memoryStore };
 const keycloakConfig = {
   "auth-server-url": `${keycloakHost}`,
   'bearer-only': false,
-  "ssl-required": "external",
+  "ssl-required": "none",
   "resource": "nodejs-connect",
   "policy-enforcer": {},
   "confidential-port": 0,
