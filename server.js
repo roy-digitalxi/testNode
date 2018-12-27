@@ -38,8 +38,7 @@ const mongoDbHost = 'mongodb-bitnami.default.svc.cluster.local';
 const mongoDbUser = 'root';
 const mongoDbPassword = 'password';
 
-// const keycloakHost = 'http://35.203.22.133/auth';
-const keycloakHost = 'http://localhost:8080/auth';
+const keycloakHost = 'http://35.203.22.133/auth';
 const keycloakUser = 'keycloak';
 const keycloakPassword = '8iz3iZpGW7';
 
