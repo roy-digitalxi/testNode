@@ -491,8 +491,8 @@ app.post('/admin/create_org', (req, res) => {
 
                     const createDbQuery = `CREATE DATABASE ${dbName}`;
                     const createTableQuery = `CREATE TABLE ${dbName}.customers (name VARCHAR(255), address VARCHAR(255))`;
-                    const createDbUserQuery = `CREATE USER '${dbUserName}'@'${mysqlHost}' IDENTIFIED BY '${dbPassword}';`;
-                    const addPermissionQuery = `GRANT ALL PRIVILEGES ON ${dbName}.* TO '${dbUserName}'@'${mysqlHost}';`;
+                    const createDbUserQuery = `CREATE USER '${dbUserName}'@'%' IDENTIFIED BY '${dbPassword}';`;
+                    const addPermissionQuery = `GRANT ALL PRIVILEGES ON ${dbName}.* TO '${dbUserName}'@'%';`;
 
                     // 5. mysql setup
                     mysqlCon.query(createDbQuery, (err, result) => {
