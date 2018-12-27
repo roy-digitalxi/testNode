@@ -1,5 +1,5 @@
 {
-  "realm": "nodejs-example",
+  "realm": "org97330",
   "auth-server-url": "http://35.203.22.133/auth",
   "ssl-required": "external",
   "resource": "nodejs-connect",
