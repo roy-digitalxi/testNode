@@ -1,7 +1,7 @@
 {
   "realm": "org97330",
   "auth-server-url": "http://35.203.22.133/auth",
-  "ssl-required": "external",
+  "ssl-required": "none",
   "resource": "nodejs-connect",
   "public-client": true,
   "confidential-port": 0,
