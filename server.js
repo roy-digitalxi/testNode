@@ -492,7 +492,8 @@ app.post('/admin/create_org', (req, res) => {
 
                         return res.json({
                           confirmation: 'fail',
-                          message: 'fail to create db'
+                          message: 'fail to create db',
+                          err
                         })
                       }
 
