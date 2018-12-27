@@ -30,6 +30,19 @@ const MongoClient = require('mongodb').MongoClient;
 const mongoose = require('mongoose');
 
 
+const mysqlHost = 'mysql-bitnami-mysql.default.svc.cluster.local';
+const mysqlUser = 'root';
+const mysqlPassword = 'root';
+
+const mongoDbHost = 'mongodb-bitnami.default.svc.cluster.local';
+const mongoDbUser = 'root';
+const mongoDbPassword = 'password';
+
+// const keycloakHost = 'http://35.203.22.133/auth';
+const keycloakHost = 'http://localhost:8080/auth';
+const keycloakUser = 'keycloak';
+const keycloakPassword = '8iz3iZpGW7';
+
 // express
 const app = express();
 const port = (process.env.PORT || 3000);
@@ -37,7 +50,6 @@ app.use(bodyParser.json());
 
 
 // keycloak session
-const keycloakHost = 'http://35.203.22.133/auth';
 const memoryStore = new session.MemoryStore();
 const config = { store: memoryStore };
 const keycloakConfig = {
@@ -107,7 +119,7 @@ app.post('/mongodb_create', keycloak.enforcer(['res1:create'],
 
       const dbName = dbUserName;
 
-      MongoClient.connect(`mongodb://${dbUserName}:${dbPassword}@mongodb-bitnami.default.svc.cluster.local:27017/${dbName}`, { useNewUrlParser: true }, (err, db) => {
+      MongoClient.connect(`mongodb://${dbUserName}:${dbPassword}@${mongoDbHost}:27017/${dbName}`, { useNewUrlParser: true }, (err, db) => {
         if (err) {
           return res.json({
             confirmation: 'fail',
@@ -176,7 +188,7 @@ app.post('/mongodb_view', keycloak.enforcer(['res1:create'],
 
       const dbName = dbUserName;
 
-      MongoClient.connect(`mongodb://${dbUserName}:${dbPassword}@mongodb-bitnami.default.svc.cluster.local:27017/${dbName}`, { useNewUrlParser: true }, (err, db) => {
+      MongoClient.connect(`mongodb://${dbUserName}:${dbPassword}@${mongoDbHost}:27017/${dbName}`, { useNewUrlParser: true }, (err, db) => {
         if (err) {
           return res.json({
             confirmation: 'fail',
@@ -244,7 +256,7 @@ app.post('/mysql_create', keycloak.enforcer(['res1:create'],
       const dbName = dbUserName;
 
       var con = mysql.createConnection({
-        host: `mysql-bitnami-mysql.default.svc.cluster.local`,
+        host: `${mysqlHost}`,
         user: dbName,
         password: dbPassword,
         database: dbName
@@ -322,7 +334,7 @@ app.post('/mysql_view', keycloak.enforcer(['res1:create'],
       const dbName = dbUserName;
 
       var con = mysql.createConnection({
-        host: `mysql-bitnami-mysql.default.svc.cluster.local`,
+        host: `${mysqlHost}`,
         user: dbName,
         password: dbPassword,
         database: dbName
@@ -409,9 +421,9 @@ app.post('/admin/create_org', (req, res) => {
 
   // 1. mysql check
   const mysqlCon = mysql.createConnection({
-    host: `mysql-bitnami-mysql.default.svc.cluster.local`,
-    user: "root",
-    password: 'root',
+    host: mysqlHost,
+    user: mysqlUser,
+    password: mysqlPassword,
   });
   mysqlCon.connect((err) => {
     if (err) {
@@ -432,7 +444,7 @@ app.post('/admin/create_org', (req, res) => {
       }
 
       // 2. mongodb check
-      const adminPath = 'mongodb://root:password@mongodb-bitnami.default.svc.cluster.local:27017/';
+      const adminPath = `mongodb://${mongoDbUser}:${mongoDbPassword}@${mongoDbHost}:27017/`;
       const mongoCon = mongoose.createConnection(adminPath);
       const Admin = mongoose.mongo.Admin;
       mongoCon.on('open', () => {
@@ -451,8 +463,8 @@ app.post('/admin/create_org', (req, res) => {
           // 3. keycloak check
           const keyCloakSettings = {
             baseUrl: `${keycloakHost}`,
-            username: 'keycloak',
-            password: '8iz3iZpGW7',
+            username: `${keycloakUser}`,
+            password: `${keycloakPassword}`,
             grant_type: 'password',
             client_id: 'admin-cli'
           };
@@ -480,8 +492,8 @@ app.post('/admin/create_org', (req, res) => {
 
                     const createDbQuery = `CREATE DATABASE ${dbName}`;
                     const createTableQuery = `CREATE TABLE ${dbName}.customers (name VARCHAR(255), address VARCHAR(255))`;
-                    const createDbUserQuery = `CREATE USER '${dbUserName}'@'mysql-bitnami-mysql.default.svc.cluster.local' IDENTIFIED BY '${dbPassword}';`;
-                    const addPermissionQuery = `GRANT ALL PRIVILEGES ON ${dbName}.* TO '${dbUserName}'@'mysql-bitnami-mysql.default.svc.cluster.local';`;
+                    const createDbUserQuery = `CREATE USER '${dbUserName}'@'${mysqlHost}' IDENTIFIED BY '${dbPassword}';`;
+                    const addPermissionQuery = `GRANT ALL PRIVILEGES ON ${dbName}.* TO '${dbUserName}'@'${mysqlHost}';`;
 
                     // 5. mysql setup
                     mysqlCon.query(createDbQuery, (err, result) => {
@@ -622,8 +634,8 @@ app.post('/admin/create_org', (req, res) => {
                                                 // 4. admin login
                                                 let url = `${keycloakHost}/realms/master/protocol/openid-connect/token`;
                                                 let params = qs.stringify({
-                                                  username: 'keycloak',
-                                                  password: '8iz3iZpGW7',
+                                                  username: `${keycloakUser}`,
+                                                  password: `${keycloakPassword}`,
                                                   client_id: 'admin-cli',
                                                   grant_type: 'password'
                                                 });
