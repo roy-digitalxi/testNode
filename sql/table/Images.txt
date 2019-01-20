@@ -1,0 +1,16 @@
+CREATE TABLE ${dbName}_image.`Images` (
+  `ImageID` int(11) NOT NULL AUTO_INCREMENT,
+  `ImageGUID` varchar(40) NOT NULL,
+  `ImageType` varchar(10) NOT NULL,
+  `Height` varchar(255) DEFAULT NULL,
+  `Width` varchar(255) DEFAULT NULL,
+  `ImageData` longblob NOT NULL,
+  `ImageData72X72` longblob,
+  `ImageData90X90` longblob,
+  `ImageData200X200` longblob,
+  `ImageData250X250` longblob,
+  `ImageData525X295` longblob,
+  `ImageData726X420` longblob,
+  PRIMARY KEY (`ImageID`),
+  UNIQUE KEY `ImageGUID_UNIQUE` (`ImageGUID`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

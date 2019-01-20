@@ -1,0 +1,13 @@
+CREATE TABLE ${dbName}.`ExperienceStreams` (
+  `ExperienceStreamID` int(11) NOT NULL AUTO_INCREMENT,
+  `ExperienceStreamGUID` varchar(40) NOT NULL,
+  `ExperienceGUID` varchar(40) NOT NULL,
+  `ExperienceChannelID` int(11) NOT NULL,
+  `ExperienceTitle` varchar(255) DEFAULT NULL,
+  `ExperienceClicks` int(11) NOT NULL DEFAULT '0',
+  `CreatedBy` varchar(255) DEFAULT NULL,
+  `UpdatedBy` varchar(255) DEFAULT NULL,
+  `CreatedAt` datetime NOT NULL,
+  `UpdatedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`ExperienceStreamID`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
