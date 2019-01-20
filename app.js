@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 app.get('/', function (req, res) {
   return res.json({
-    message: 'server is running'
+    message: 'server is running !!'
   })
 })
 
